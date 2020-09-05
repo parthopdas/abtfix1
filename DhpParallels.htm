@@ -56,6 +56,7 @@ manasā ce paduṭṭhena <br>
 bhāsati vā karoti vā,<br>
 tato naṁ dukkham anveti <br>
 cakkaṁ va vahato padaṁ. </p>
+<span style="color: red;">deadbeef</span>
 </td>
 
 <td>
@@ -127,6 +128,7 @@ manasā ca prasannena<br>
 bhāṣate vā karoti vā |<br>
 tato naṁ sukham anneti<br>
 cchāyā vā anapāyinī ||</p>
+<span style="color: red;">baadf00d</span>
 </td>
 
 <td>
@@ -198,6 +200,7 @@ veraṁ tesaṁ na śāmyati ||</p>
 ajayan mām ajāpayet /<br>
 atra ye hy upanahyanti<br>
 vairaṁ teṣāṁ na śāmyati //</p>
+<span style="color: red;">baadbeef</span>
 </td>
 
 <td>
@@ -883,14 +886,22 @@ function FilterDhp() {
   const str = filter.replace(/[atnidlm]/g, (m) => variations[m])
   const filterRegex = new RegExp(str)
   // Loop through all table rows, and hide those who don't match the search query
-  for (i = 0; i < tr.length; i++) {
-    td = tr[i].getElementsByTagName("td")[0];
-    if (td) {
-      if (td.innerHTML.toLowerCase().search(filterRegex) > -1) {
-        tr[i].style.display = "";
-      } else {
-        tr[i].style.display = "none";
-      }
+  for (i = 1; i < tr.length; i++) {
+    var trContainsText = [].slice.call(tr[i].getElementsByTagName("td")).some(td => doesTdHaveText(filterRegex, td));
+    if (trContainsText) {
+      tr[i].style.display = "";
+    } else {
+      tr[i].style.display = "none";
+    }
+  }
+}
+
+function doesTdHaveText(filterRegex, td) {
+  if (td) {
+    if (td.innerHTML.toLowerCase().search(filterRegex) > -1) {
+      return true;
+    } else {
+      return false;
     }
   }
 }
