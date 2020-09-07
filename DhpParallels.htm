@@ -870,9 +870,16 @@ function FilterDhp() {
   filter = filter.replace("cull", "cūḷ")
 
   table = document.getElementById("DhpParallels");
-  tr = table.getElementsByTagName("tr");
 
-  if (filter.length < 3) filter = ""
+  const trs = [].slice.call(table.getElementsByTagName("tr")).splice(1)
+  clearAllHighlights(trs)
+
+  // Reset everything if filter is too small
+  if (filter.length < 3) {
+    showAllRows(trs)
+    return
+  }
+
   const variations = { 
     'a': '[aā]',
     'i': '[iī]',
@@ -884,16 +891,38 @@ function FilterDhp() {
     'm': '[mṁṁ]',
   }
   const str = filter.replace(/[atnidlm]/g, (m) => variations[m])
-  const filterRegex = new RegExp(str)
+  const filterRegex = new RegExp(str, 'gi')
+
   // Loop through all table rows, and hide those who don't match the search query
-  for (i = 1; i < tr.length; i++) {
-    var trContainsText = [].slice.call(tr[i].getElementsByTagName("td")).some(td => doesTdHaveText(filterRegex, td));
+  for (i = 0; i < trs.length; i++) {
+    var trContainsText = [].slice.call(trs[i].getElementsByTagName("td")).some(td => doesTdHaveText(filterRegex, td));
     if (trContainsText) {
-      tr[i].style.display = "";
+      showTrAndHighlightMatches(trs[i], filterRegex)
     } else {
-      tr[i].style.display = "none";
+      hideTr(trs[i])
     }
   }
+}
+
+function clearAllHighlights(trs) {
+  trs.forEach(tr => clearHighlights(tr))
+}
+
+function clearHighlights(tr) {
+  tr.innerHTML = tr.innerHTML.replace(/<mark[^/>]*>/g, '').replace(/<\/mark>/g, '')
+}
+
+function showAllRows(trs) {
+  trs.forEach(tr => { tr.style.display = "" })
+}
+
+function showTrAndHighlightMatches(tr, filterRegex) {
+  tr.style.display = "";
+  tr.innerHTML = tr.innerHTML.replace(filterRegex, m => '<mark>' + m + '</mark>')
+}
+
+function hideTr(tr) {
+  tr.style.display = "none";  
 }
 
 function doesTdHaveText(filterRegex, td) {
